@@ -1,6 +1,7 @@
 {
   "name": "gofintech/config",
   "description": "Trivial PHP configuration library for batch processes",
+  "license": "MIT",
   "require": {
     "php": "^7.2"
   },
