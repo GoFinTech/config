@@ -1,0 +1,12 @@
+{
+  "name": "gofintech/config",
+  "description": "Trivial PHP configuration library for batch processes",
+  "require": {
+    "php": "^7.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "GoFinTech\\Config\\": "src/"
+    }
+  }
+}
