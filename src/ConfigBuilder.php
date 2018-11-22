@@ -7,6 +7,11 @@ class ConfigBuilder
 
     private $values;
 
+    public static function buildDefault() {
+        $builder = new ConfigBuilder();
+        return $builder->build();
+    }
+
     public function __construct(bool $preventDefault = false)
     {
         $this->values = [];
