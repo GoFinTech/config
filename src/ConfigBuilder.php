@@ -4,29 +4,27 @@ namespace GoFinTech\Config;
 
 class ConfigBuilder
 {
-
     private $values;
 
     public static function buildDefault() {
         $builder = new ConfigBuilder();
+
+        if (isset($_ENV['GFT_CONFIG_LOCAL']))
+            $builder->loadConfigFile($_ENV['GFT_CONFIG_LOCAL']);
+        else
+            $builder->loadConfigFile("config.ini", true);
+
+        if (isset($_ENV['GFT_CONFIG_GLOBAL']))
+            $builder->loadConfigFile($_ENV['GFT_CONFIG_GLOBAL']);
+
+        $builder->loadEnvironment();
+
         return $builder->build();
     }
 
-    public function __construct(bool $preventDefault = false)
+    public function __construct()
     {
         $this->values = [];
-        if ($preventDefault)
-            return;
-
-        if (isset($_ENV['GFT_CONFIG_LOCAL']))
-            $this->loadConfigFile($_ENV['GFT_CONFIG_LOCAL']);
-        else
-            $this->loadConfigFile("config.ini", true);
-
-        if (isset($_ENV['GFT_CONFIG_GLOBAL']))
-            $this->loadConfigFile($_ENV['GFT_CONFIG_GLOBAL']);
-
-        $this->loadEnvironment();
     }
 
     public function build(): Config
@@ -34,9 +32,9 @@ class ConfigBuilder
         return new Config($this->values);
     }
 
-    public function loadConfigFile(string $fileName, bool $optional = false): ConfigBuilder
+    public function loadConfigFile(string $fileName, bool $required = true): ConfigBuilder
     {
-        if ($optional && !file_exists($fileName))
+        if (!$required && !file_exists($fileName))
             return $this;
 
         $values = parse_ini_file($fileName);
