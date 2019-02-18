@@ -9,6 +9,14 @@ class ConfigBuilder
     public static function buildDefault() {
         $builder = new ConfigBuilder();
 
+        // This cache does not refresh but it does not prevent implementing it in future
+        $cacheFile = $_ENV['GFT_CONFIG_CACHE'] ?? null;
+
+        if ($cacheFile && file_exists($cacheFile)) {
+            $builder->loadCache($cacheFile);
+            return $builder->build();
+        }
+
         if (isset($_ENV['GFT_CONFIG_LOCAL']))
             $builder->loadConfigFile($_ENV['GFT_CONFIG_LOCAL']);
         else
@@ -18,6 +26,10 @@ class ConfigBuilder
             $builder->loadConfigFile($_ENV['GFT_CONFIG_GLOBAL']);
 
         $builder->loadEnvironment();
+
+        if ($cacheFile) {
+            $builder->writeCache($cacheFile);
+        }
 
         return $builder->build();
     }
@@ -30,6 +42,22 @@ class ConfigBuilder
     public function build(): Config
     {
         return new Config($this->values);
+    }
+
+    private function loadCache(string $fileName) : void
+    {
+        $this->values = json_decode(file_get_contents($fileName), true);
+    }
+
+    private function writeCache(string $fileName) : void
+    {
+        $tempFileName = tempnam(sys_get_temp_dir(), 'cfgcache');
+        if (file_put_contents($tempFileName, json_encode($this->values))) {
+            rename($tempFileName, $fileName);
+        }
+        else {
+            unlink($tempFileName);
+        }
     }
 
     public function loadConfigFile(string $fileName, bool $required = true): ConfigBuilder

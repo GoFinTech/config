@@ -3,7 +3,8 @@
   "description": "Trivial PHP configuration library for batch processes",
   "license": "MIT",
   "require": {
-    "php": "^7.2"
+    "php": "^7.2",
+    "ext-json": "*"
   },
   "autoload": {
     "psr-4": {
